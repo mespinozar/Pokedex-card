@@ -3,6 +3,7 @@ const pokemonContainer = document.querySelector('.pokemon-container');
 const spinnerContainer = document.querySelector('#spinner');
 const previous = document.querySelector('#previous');
 const next = document.querySelector('#next');
+let allGlobalPokemon = [];
 
 let offset = 1;
 let limit = 8;
@@ -22,16 +23,30 @@ next.addEventListener('click', () => {
 });
 
 function fetchPokemon(id) {
+
     fetch(`https://pokeapi.co/api/v2/pokemon/${id}/`)
     .then(res => res.json())
     .then(data => {
+        allGlobalPokemon.push(data);
         createPokemon(data);
-        spinner.style.display = 'none';
     });
 }
 
-function fetchPokemons(offset, limit) {
-    spinner.style.display = 'block';
+document.addEventListener( "keyup",  e => {
+    pokemonContainer.innerHTML = '';
+    if (e.target.matches('#inputText')) {
+        let pokemonFilter = allGlobalPokemon.filter( (element) => {
+            return element.name.toLocaleLowerCase().includes(e.target.value.toLocaleLowerCase())
+        })
+
+        pokemonFilter.forEach((pokemon) => {
+           createPokemon(pokemon);
+        })
+        
+    }
+}); 
+
+function fetchPokemons(offset, limit) {   
     for (let i = offset; i <= offset + limit; i++) {
         fetchPokemon(i);
     }
